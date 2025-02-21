@@ -14,10 +14,20 @@ var (
 
 func main() {
 	fmt.Println("Starting to Server")
-	go StartServer()
+	StartServer()
 
-	client := &http.Client{}
+	// client := &http.Client{}
 
+	// startNewDeployment(client)
+
+	// fmt.Println("Waiting for 5 sec")
+	// time.Sleep(5 * time.Second)
+
+	// fmt.Println("start event streaming")
+	// startStreamDeploymentLogs(client)
+}
+
+func startNewDeployment(client *http.Client) {
 	reqstruct := &StartDeploymentRequest{
 		deploymentId: deploymentId,
 	}
@@ -32,32 +42,46 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	fmt.Println("Starting deployment")
 	if _, err = client.Do(req); err != nil {
 		panic(err)
 	}
+}
 
-	fmt.Println("Waiting for 5 sec")
-	time.Sleep(10 * time.Second)
-
+func fetchDeploymentLogs(client *http.Client) {
 	fetchDepReq := &StartLogStreamingRequest{
 		deploymentId: deploymentId,
 	}
 
-	reqByte, err = json.Marshal(fetchDepReq)
+	reqByte, err := json.Marshal(fetchDepReq)
 	if err != nil {
 		panic(err)
 	}
-	b = bytes.NewBuffer(reqByte)
+	b := bytes.NewBuffer(reqByte)
 
 	fmt.Println("Starting to fetch deployment logs")
-	req, err = http.NewRequest("GET", "http://localhost:8080/startLogStreaming", b)
+	req, err := http.NewRequest("GET", "http://localhost:8080/startLogStreaming", b)
 	if err != nil {
 		panic(err)
 	}
 
 	if _, err = client.Do(req); err != nil {
 		panic(err)
+	}
+}
+
+func startStreamDeploymentLogs(client *http.Client) {
+	req, err := http.NewRequest("GET", "http://localhost:8080/streamDeploymentLogs", nil)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < 5; i++ {
+		res, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		time.Sleep(time.Second)
+		fmt.Println(res.Body)
 	}
 }
