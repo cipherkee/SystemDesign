@@ -18,7 +18,9 @@ import (
 func StartServer() {
 	http.HandleFunc("/startDeployment", StartDedployment)
 
-	http.HandleFunc("/startLogStreaming", StartLogStreaming)
+	http.HandleFunc("/getLogs", getLogs)
+
+	http.HandleFunc("/streamDeploymentLogs", streamDeploymentLogs)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -47,7 +49,7 @@ func StartDedployment(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
-func StartLogStreaming(w http.ResponseWriter, r *http.Request) {
+func getLogs(w http.ResponseWriter, r *http.Request) {
 	req := StartLogStreamingRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		fmt.Println(err)
@@ -75,4 +77,29 @@ func StartLogStreaming(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 	}()
+}
+
+func streamDeploymentLogs(w http.ResponseWriter, r *http.Request) {
+
+	rc := http.NewResponseController(w)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	t := time.NewTicker(time.Second)
+	clientGone := r.Context().Done()
+
+	defer t.Stop()
+	for {
+		select {
+		case <-clientGone:
+			fmt.Println("client disconnected")
+		case <-t.C:
+			fmt.Fprintf(w, "data: Time is %v\n\n", time.Now())
+			rc.Flush()
+		}
+	}
 }
