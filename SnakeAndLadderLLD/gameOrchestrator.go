@@ -9,7 +9,7 @@ import (
 type Orchestrator struct {
 	Game  *SNLGame
 	Dice  *Dice
-	Queue PlayerQueue // queue of players by order
+	Queue *PlayerQueue // queue of players by order
 }
 
 func InitializeOrchestrator(players []string, boardSize int, snakes, ladders [][]int) *Orchestrator {
@@ -19,7 +19,7 @@ func InitializeOrchestrator(players []string, boardSize int, snakes, ladders [][
 
 	orch := &Orchestrator{
 		Dice:  &Dice{},
-		Queue: playersModels,
+		Queue: InitPlayerQueue(playersModels),
 		Game:  game,
 	}
 
