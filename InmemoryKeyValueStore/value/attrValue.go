@@ -5,6 +5,7 @@ import "errors"
 type IAttrValue interface {
 	Get() (interface{}, error)
 	Set(interface{}) error
+	GetType() string
 }
 
 var (
@@ -38,6 +39,10 @@ func (a *AttrValueString) Set(newValue interface{}) error {
 	}
 }
 
+func (a *AttrValueString) GetType() string {
+	return "string"
+}
+
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
 type AttrValueInt struct {
@@ -62,4 +67,8 @@ func (a *AttrValueInt) Set(newValue interface{}) error {
 	default:
 		return IncompatibleValueUpdate
 	}
+}
+
+func (a *AttrValueInt) GetType() string {
+	return "int"
 }

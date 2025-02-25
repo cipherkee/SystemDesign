@@ -30,11 +30,16 @@ func main() {
 		"count":  3,
 	})
 
-	kvstore.Put("key2", map[string]interface{}{
+	err := kvstore.Put("key2", map[string]interface{}{
 		"name":   "Apple",
 		"colour": "red",
-		"count":  2,
+		"count":  40,
 	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(kvstore.SearchAttr("colour", "red"))
 
 	s, err := kvstore.Get("key2")
 	if err != nil {
