@@ -1,6 +1,6 @@
 package value
 
 type Attribute struct {
-	name     string
-	typeName string // type.string
+	Name     string
+	TypeName string // type.string
 }
