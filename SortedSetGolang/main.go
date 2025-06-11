@@ -87,5 +87,6 @@ func (s *TaskScheduler) Runnable(e *TaskExecutor) {
 //---------------------------------------------------------------------------------------------------------------------
 
 func main() {
-
+	//fmt.Println("Starting main")
+	PlayAround()
 }
