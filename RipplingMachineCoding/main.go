@@ -8,46 +8,69 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/cipherkee/ripplingmachinecoding/models"
+)
+
+const (
+	getSample     = "http://localhost:8080/get-body"
+	postSample    = "http://localhost:8080/post"
+	getQuestions  = "http://localhost:8080/getquestions"
+	postquestions = "http://localhost:8080/postquestion"
 )
 
 // --- Main Function with Client Code ---
 
 func main() {
-	server := &Server{}
-	go server.Start(":8080")
 
 	time.Sleep(1 * time.Second)
 
 	// --- Client: GET with JSON body ---
-	input := Input{Name: "Keerthana", Age: 30}
-	jsonData, _ := json.Marshal(input)
+	// input := models.Input{Name: "Keerthana", Age: 30}
+	// jsonData, _ := json.Marshal(input)
 
 	client := &http.Client{}
-	HandleGet(client, jsonData)
 
-	handlePut(client, jsonData)
+	// HandleGet(client, jsonData)
+
+	// handlePut(client, jsonData)
+
+	question := models.QuestionRequest{
+		Title:   "Question1",
+		Content: "How are you ?",
+		EmailId: "abc@gmail.com",
+	}
+
+	jsonData, _ := json.Marshal(question)
+
+	question2 := models.QuestionRequest{
+		Title:   "Question2",
+		Content: "What is it ?",
+		EmailId: "def@gmail.com",
+	}
+
+	jsonData2, _ := json.Marshal(question2)
+
+	handlePut(client, postquestions, jsonData)
+	handlePut(client, postquestions, jsonData2)
+	HandleGet(client, getQuestions)
 }
 
-func HandleGet(client *http.Client, jsonData []byte) {
+func HandleGet(client *http.Client, url string) {
 
-	req, err := http.NewRequest("GET", "http://localhost:8080/get-body", bytes.NewBuffer(jsonData))
+	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal("Failed to create GET request:", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Fatal("GET with body failed:", err)
-	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
 	fmt.Println("GET Response:", string(body))
 }
 
-func handlePut(client *http.Client, jsonData []byte) {
+func handlePut(client *http.Client, url string, jsonData []byte) {
 
-	req, err := http.NewRequest("POST", "http://localhost:8080/post", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Fatal("PUT request failed:", err)
 	}
@@ -59,5 +82,5 @@ func handlePut(client *http.Client, jsonData []byte) {
 	}
 
 	body, _ := io.ReadAll(putResp.Body)
-	fmt.Println("PUT Response:", string(body))
+	fmt.Println("POST Response:", string(body))
 }

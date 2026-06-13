@@ -1,0 +1,40 @@
+Misses:
+1. Start with entity modelling
+2. Think of complete product. What FR is in scope. Missed that channels can be pinned, starred etc
+3. For table names come up with noun names (Membership better than user_channels table)
+4. HTTP usecase servers should be different from Edge server/ websocket servers
+5. DB write can go through HTTP server, WS to maintain DB connection can be super expensive. 
+   Edge server is directly connected to the internet. That server having direct connection to the DB is a security risk
+6. Realtime usecases - online/offline status, when use is typing, emojis and reactions
+7. Persistence over delivery time: HTTP -> Storage, HTTP-> Edge server for delivery.
+8. WA - WSS sends msg to queue and continues to WS delivery.
+9. Zoom with no historical messages - No persistence, only Websocket connections for delivery of messages
+10. Having dedicated Edge servers per organisation. Edge server manager and HTTP server can be different.
+ This manager will ensure that users of an organisation will go to the same set of Edge servers.
+11. Redis pubsub is push based message delivery. So it is possible that message is not delivered to some consumers. 
+ Thats why we need occasional pull based message pull from the clients
+
+
+Question: 
+1. Why not send to Edge server and to HTTP server at the same time ?. Client can retry the persistence until success
+2. In case of WA, realtime delivery of message is done. Each client has some local storage of messages which WA relies on for eventual persistence. How ??
+3. Single realtime pubsub ? Does it not cause starvation ? - Yes, we moved to redis channel per slack channel
+
+Hands-on trial:
+1. See how redis realtime pub sub can be integrated
+2. WS connection managers 
+3. Edge server: Allow clients register to Edge server, on any message received, push to all redis channels. If message comes on redis, push to all the clients
+
+
+Questions section:
+
+1. No of possible connections with Edge server ?
+
+s.IP, dest.IP, src.port, dest.port, protocol
+
+If src.IP is fixed due to a LB or proxy, then 65565 connections are possible. 
+In case of Websocket, we will not have fixed src.IP, so much more connections are possible.
+
+
+
+

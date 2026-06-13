@@ -1,0 +1,56 @@
+NoSQL DB dont provide referencial integrity between tables. 
+SQL provides transaction capabilities that means, in one network call we dont need to dump all the changes.
+In ddb, we need to provide all the data updates we need to make all updates in transation in one call.
+RDBMS why is not scalable ?
+Types of NoSQL - DocumentDB (MongoDB, Elastic search) , Key Value store (Redis, DDB)
+
+! SQL is a query language and is not a db in itself. We can write a SQL layer on top of MongoDB also.
+
+DocumentDB - JSON based, support complex queries (ES supports aggregation queries well),
+ partial updates to document possible (no need to read the record to update, most DocumentDB supports it), closest to RDBMS
+ - MongoDB provides ACID, but is expensive as the data is sharded
+
+Key value store - Key-wise access pattern (restricted access pattern),
+ Heavily partitioned (because they only support key based access pattern),
+ no complex queries support
+
+Column oriented database:
+ - disk based database, because they store large amounts of data
+ - row oriented db are OLTP (transactional and not ACID compliance). Mostly used for DB operations on user actions.
+ - high compression rate - since the same datatype is stored together
+ - eg, analytics usecase - to process column-wise, redshift
+ - OLAP 
+ - Recommended that Batch writes are done as the writes will be slower
+
+
+Wide column store (Cassandra) :
+ - Mix of column and row db
+ - Column families are defined based on the access pattern (some columns are stored together)
+ - Aggregation queries supported ??
+ - Is this also Key value based ? How are queries written ?
+
+MongoDB, DDB also store using B+ tree
+
+GraphDB:
+ - store data in nodes and edges
+ - greate for modelling social behaviours, recommendations 
+ - usecase: Fraud detection
+ - eg. Neo4j, Neptune, DGraph, TigerGraph
+ - Use only where graph alogrithms are used
+ - Collaborative filtering: Finding a missing edge. Recommendation based on similar user behaviour
+ - Dont use anywhere where there is a graph kind of entity relationships
+ - Very hard to manage
+ - Bad at pagination. Like if we did social media connections on GraphDB. Why ?? How is the data stored ?
+ - Read paper: WTF - Who To Follow
+ - Storage: Adjacency in disk, but they use lots of memory to store edges
+
+Parameters to see in a DB:
+1. Complex queries support - aggreation queries
+2. Partial updates to document
+3. ACID compliance requirement
+4. B+Trees (better reads) Vs LSM tree (better writes)
+5. Accesspatterns and all the above is more important in deciding the DB than CAP theorem. CAP theorem comes last after all the features that a DB provides.
+
+Why NoSQL scale:
+ - No referencial integrity checks. Thats why they can offer that.
+
